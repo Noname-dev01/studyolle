@@ -1,5 +1,6 @@
 package com.studyolle.studyolle.config;
 
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -28,6 +29,8 @@ public class SecurityConfig {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().antMatchers("/resources/**");
+        return (web) -> web.ignoring().antMatchers("/resources/**")
+                .and()
+                .ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
     }
 }
