@@ -18,11 +18,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .mvcMatchers("/","/login","/sign-up","/check-email","/check-email-token",
+                .mvcMatchers("/","/login","/sign-up","/check-email-token",
                         "/email-login","/check-email-login","/login-link").permitAll()
                 .mvcMatchers(HttpMethod.GET,"/profile/*").permitAll()
                 .anyRequest().authenticated();
-
 
         return http.build();
     }
