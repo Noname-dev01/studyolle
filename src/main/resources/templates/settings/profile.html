@@ -11,10 +11,10 @@
       <div th:replace="fragments.html :: settings-menu (currentMenu='profile')"></div>
     </div>
     <div class="col-8">
-      <div th:if="${message}" class="alert alert-info alert-dismissible fade show mt-3" role="alert">
+      <div th:if="${message}" class="alert alert-info alert-dismissible fade show mt-3" role="alert" id="message-box">
         <span th:text="${message}">완료</span>
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+        <button type="button" class="btn-close" id="closeBtn" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true"></span>
         </button>
     </div>
 
@@ -113,6 +113,7 @@
   <link href="/node_modules/cropper/dist/cropper.min.css" rel="stylesheet">
   <script src="/node_modules/cropper/dist/cropper.min.js"></script>
   <script src="/node_modules/jquery-cropper/dist/jquery-cropper.min.js"></script>
+  <script th:replace="fragments.html :: message-close"></script>
   <script type="application/javascript">
     $(function (){
       cropper = '';

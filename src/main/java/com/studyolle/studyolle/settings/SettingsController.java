@@ -3,8 +3,14 @@ package com.studyolle.studyolle.settings;
 import com.studyolle.studyolle.account.AccountService;
 import com.studyolle.studyolle.account.CurrentUser;
 import com.studyolle.studyolle.domain.Account;
+import com.studyolle.studyolle.settings.form.NicknameForm;
+import com.studyolle.studyolle.settings.form.Notifications;
+import com.studyolle.studyolle.settings.form.PasswordForm;
+import com.studyolle.studyolle.settings.form.Profile;
+import com.studyolle.studyolle.settings.validator.NicknameValidator;
+import com.studyolle.studyolle.settings.validator.PasswordFormValidator;
 import lombok.RequiredArgsConstructor;
-import org.h2.engine.Mode;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -20,22 +26,30 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 public class SettingsController {
 
+    //오타 방지로 빼놓음
+
+    static final String SETTINGS_PROFILE_VIEW_NAME = "settings/profile";
+    static final String SETTINGS_PROFILE_URL = "/settings/profile";
+
+    private final AccountService accountService;
+    private final ModelMapper modelMapper;
+    private final NicknameValidator nicknameValidator;
+
     @InitBinder("passwordForm")
     public void initBinder(WebDataBinder webDataBinder){
         webDataBinder.addValidators(new PasswordFormValidator());
     }
 
-    //오타 방지로 빼놓음
-    static final String SETTINGS_PROFILE_VIEW_NAME = "settings/profile";
-    static final String SETTINGS_PROFILE_URL = "/settings/profile";
-
-    private final AccountService accountService;
+    @InitBinder("nicknameForm")
+    public void nicknameFormInitBinder(WebDataBinder webDataBinder){
+        webDataBinder.addValidators(nicknameValidator);
+    }
 
     @GetMapping(SETTINGS_PROFILE_URL)
     public String updateProfileForm(@CurrentUser Account account, Model model){
 
         model.addAttribute(account);
-        model.addAttribute(new Profile(account));
+        model.addAttribute(modelMapper.map(account, Profile.class));
 
         return SETTINGS_PROFILE_VIEW_NAME;
     }
@@ -78,7 +92,7 @@ public class SettingsController {
     @GetMapping("/settings/notifications")
     public String updateNotificationsForm(@CurrentUser Account account, Model model){
         model.addAttribute(account);
-        model.addAttribute(new Notifications(account));
+        model.addAttribute(modelMapper.map(account, Notifications.class));
         return "settings/notifications";
     }
 
@@ -93,5 +107,25 @@ public class SettingsController {
         accountService.updateNotifications(account, notifications);
         attributes.addFlashAttribute("message", "알림 설정을 변경했습니다.");
         return "redirect:/settings/notifications";
+    }
+
+    @GetMapping("/settings/account")
+    public String updateAccountForm(@CurrentUser Account account, Model model){
+        model.addAttribute(account);
+        model.addAttribute(modelMapper.map(account, NicknameForm.class));
+        return "settings/account";
+    }
+
+    @PostMapping("/settings/account")
+    public String updateAccount(@CurrentUser Account account, @Valid NicknameForm nicknameForm, Errors errors,
+                                Model model, RedirectAttributes attributes){
+        if (errors.hasErrors()){
+            model.addAttribute(account);
+            return "settings/account";
+        }
+
+        accountService.updateNickname(account, nicknameForm.getNickname());
+        attributes.addFlashAttribute("message", "닉네임을 수정했습니다.");
+        return "redirect:/settings/account";
     }
 }

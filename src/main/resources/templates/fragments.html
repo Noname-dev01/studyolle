@@ -92,7 +92,16 @@
     <small class="d-block mb-3 text-muted">&copy; 2020</small>
   </div>
 </footer>
+<script type="application/javascript" th:fragment="message-close">
+  $(function () {
+    let $closeBtn = $("#closeBtn");
+    let $messageBox = $("#message-box")
 
+    $closeBtn.click(function (){
+      $messageBox.hide();
+    });
+  });
+</script>
 <script type="application/javascript" th:fragment="form-validation">
   (function () {
     'use strict';
