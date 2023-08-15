@@ -3,24 +3,23 @@ package com.studyolle.studyolle.settings;
 import com.studyolle.studyolle.account.AccountService;
 import com.studyolle.studyolle.account.CurrentUser;
 import com.studyolle.studyolle.domain.Account;
-import com.studyolle.studyolle.settings.form.NicknameForm;
-import com.studyolle.studyolle.settings.form.Notifications;
-import com.studyolle.studyolle.settings.form.PasswordForm;
-import com.studyolle.studyolle.settings.form.Profile;
+import com.studyolle.studyolle.domain.Tag;
+import com.studyolle.studyolle.settings.form.*;
 import com.studyolle.studyolle.settings.validator.NicknameValidator;
 import com.studyolle.studyolle.settings.validator.PasswordFormValidator;
+import com.studyolle.studyolle.tag.TagRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -34,6 +33,7 @@ public class SettingsController {
     private final AccountService accountService;
     private final ModelMapper modelMapper;
     private final NicknameValidator nicknameValidator;
+    private final TagRepository tagRepository;
 
     @InitBinder("passwordForm")
     public void initBinder(WebDataBinder webDataBinder){
@@ -133,5 +133,23 @@ public class SettingsController {
     public String updateTags(@CurrentUser Account account, Model model){
         model.addAttribute(account);
         return "settings/tags";
+    }
+
+    @PostMapping("/settings/tags/add")
+    @ResponseBody
+    public ResponseEntity addTag(@CurrentUser Account account, @RequestBody TagForm tagForm){
+        String title = tagForm.getTagTitle();
+        //Optional 사용
+//        Tag tag = tagRepository.findByTitle(title).orElseGet(() -> tagRepository.save(Tag.builder()
+//                .title(tagForm.getTagTitle())
+//                .build()));
+        Tag tag = tagRepository.findByTitle(title);
+        if (tag == null){
+            tag = tagRepository.save(Tag.builder().title(tagForm.getTagTitle()).build());
+        }
+
+        accountService.addTag(account, tag);
+
+        return ResponseEntity.ok().build();
     }
 }
