@@ -6,8 +6,11 @@ import com.studyolle.studyolle.account.AccountService;
 import com.studyolle.studyolle.account.SignUpForm;
 import com.studyolle.studyolle.domain.Account;
 import com.studyolle.studyolle.domain.Tag;
+import com.studyolle.studyolle.domain.Zone;
 import com.studyolle.studyolle.settings.form.TagForm;
+import com.studyolle.studyolle.settings.form.ZoneForm;
 import com.studyolle.studyolle.tag.TagRepository;
+import com.studyolle.studyolle.zone.ZoneRepository;
 import org.aspectj.lang.annotation.After;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
@@ -51,6 +54,10 @@ class SettingsControllerTest {
     ObjectMapper objectMapper;
     @Autowired
     TagRepository tagRepository;
+    @Autowired
+    ZoneRepository zoneRepository;
+
+    private Zone testZone = Zone.builder().city("test").localNameOfCity("테스트시").province("테스트주").build();
 
     @BeforeEach
     void beforEach(){
@@ -59,11 +66,14 @@ class SettingsControllerTest {
         signUpForm.setEmail("admin@email.com");
         signUpForm.setPassword("12345678");
         accountService.processNewAccount(signUpForm);
+
+        zoneRepository.save(testZone);
     }
 
     @AfterEach
     void afterEach() {
         accountRepository.deleteAll();
+        zoneRepository.deleteAll();
     }
 
     @Test
@@ -202,5 +212,54 @@ class SettingsControllerTest {
                 .andExpect(status().isOk());
 
         assertFalse(account.getTags().contains(newTag));
+    }
+
+    @Test
+    @DisplayName("계정의 지역 정보 수정 폼")
+    @WithUserDetails(value = "admin", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void updateZonesForm() throws Exception {
+        mockMvc.perform(get("/settings/zones"))
+                .andExpect(view().name("settings/zones"))
+                .andExpect(model().attributeExists("account"))
+                .andExpect(model().attributeExists("whitelist"))
+                .andExpect(model().attributeExists("zones"));
+    }
+
+    @Test
+    @DisplayName("계정의 지역 정보 추가")
+    @WithUserDetails(value = "admin", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void addZone() throws Exception{
+        ZoneForm zoneForm = new ZoneForm();
+        zoneForm.setZoneName(testZone.toString());
+
+        mockMvc.perform(post("/settings/zones/add")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(zoneForm))
+                .with(csrf()))
+                .andExpect(status().isOk());
+
+        Account account = accountRepository.findByNickname("admin");
+        Zone zone = zoneRepository.findByCityAndProvince(testZone.getCity(), testZone.getProvince());
+        assertTrue(account.getZones().contains(zone));
+    }
+
+    @Test
+    @DisplayName("계정의 지역 정보 삭제")
+    @WithUserDetails(value = "admin", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void removeZone() throws Exception {
+        Account account = accountRepository.findByNickname("admin");
+        Zone zone = zoneRepository.findByCityAndProvince(testZone.getCity(), testZone.getProvince());
+        accountService.addZone(account,zone);
+
+        ZoneForm zoneForm = new ZoneForm();
+        zoneForm.setZoneName(testZone.toString());
+
+        mockMvc.perform(post("/settings/zones/remove")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(zoneForm))
+                .with(csrf()))
+                .andExpect(status().isOk());
+
+        assertFalse(account.getZones().contains(zone));
     }
 }

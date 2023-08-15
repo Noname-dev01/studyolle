@@ -6,10 +6,12 @@ import com.studyolle.studyolle.account.AccountService;
 import com.studyolle.studyolle.account.CurrentUser;
 import com.studyolle.studyolle.domain.Account;
 import com.studyolle.studyolle.domain.Tag;
+import com.studyolle.studyolle.domain.Zone;
 import com.studyolle.studyolle.settings.form.*;
 import com.studyolle.studyolle.settings.validator.NicknameValidator;
 import com.studyolle.studyolle.settings.validator.PasswordFormValidator;
 import com.studyolle.studyolle.tag.TagRepository;
+import com.studyolle.studyolle.zone.ZoneRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
@@ -40,6 +42,7 @@ public class SettingsController {
     private final NicknameValidator nicknameValidator;
     private final TagRepository tagRepository;
     private final ObjectMapper objectMapper;
+    private final ZoneRepository zoneRepository;
 
     @InitBinder("passwordForm")
     public void initBinder(WebDataBinder webDataBinder){
@@ -178,6 +181,43 @@ public class SettingsController {
 
         accountService.removeTag(account, tag);
 
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/settings/zones")
+    public String updateZonesForm(@CurrentUser Account account, Model model) throws JsonProcessingException {
+        model.addAttribute(account);
+
+        Set<Zone> zones = accountService.getZones(account);
+        model.addAttribute("zones", zones.stream().map(Zone::toString).collect(Collectors.toList()));
+
+        List<String> allZones = zoneRepository.findAll().stream().map(Zone::toString).collect(Collectors.toList());
+        model.addAttribute("whitelist", objectMapper.writeValueAsString(allZones));
+
+        return "settings/zones";
+    }
+
+    @PostMapping("/settings/zones/add")
+    @ResponseBody
+    public ResponseEntity addZone(@CurrentUser Account account, @RequestBody ZoneForm zoneForm){
+        Zone zone = zoneRepository.findByCityAndProvince(zoneForm.getCityName(), zoneForm.getProvinceName());
+        if (zone == null){
+            return ResponseEntity.badRequest().build();
+        }
+
+        accountService.addZone(account, zone);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/settings/zones/remove")
+    @ResponseBody
+    public ResponseEntity removeZone(@CurrentUser Account account, @RequestBody ZoneForm zoneForm) {
+        Zone zone = zoneRepository.findByCityAndProvince(zoneForm.getCityName(), zoneForm.getProvinceName());
+        if (zone == null){
+            return ResponseEntity.badRequest().build();
+        }
+
+        accountService.removeZone(account, zone);
         return ResponseEntity.ok().build();
     }
 }
