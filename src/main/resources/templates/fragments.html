@@ -234,11 +234,16 @@
 </div>
 
 <div th:fragment="study-settings-menu (currentMenu)" class="list-group">
-  <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'description'}? active" href="#" th:href="@{'/study/'+${study.path}+'/settings/description'}">소개</a>
-  <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'password'}? active" href="#" th:href="@{/settings/password}">배너 이미지</a>
-  <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'notifications'}? active" href="#" th:href="@{/settings/notifications}">스터디 주제</a>
-  <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'tags'}? active" href="#" th:href="@{/settings/tags}">활동 지역</a>
-  <a class="list-group-item list-group-item-action list-group-item-danger" th:classappend="${currentMenu == 'account'}? active" href="#" th:href="@{/settings/account}">스터디</a>
+  <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'description'}? active"
+     href="#" th:href="@{'/study/' + ${study.path} + '/settings/description'}">소개</a>
+  <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'image'}? active"
+     href="#" th:href="@{'/study/' + ${study.path} + '/settings/banner'}">배너 이미지</a>
+  <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'tags'}? active"
+     href="#" th:href="@{'/study/' + ${study.path} + '/settings/tags'}">스터디 주제</a>
+  <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'zones'}? active"
+     href="#" th:href="@{'/study/' + ${study.path} + '/settings/zones'}">활동 지역</a>
+  <a class="list-group-item list-group-item-action list-group-item-danger" th:classappend="${currentMenu == 'study'}? active"
+     href="#" th:href="@{'/study/' + ${study.path} + '/settings/study'}">스터디</a>
 </div>
 
 <footer th:fragment="footer">
@@ -309,4 +314,10 @@
     <span aria-hidden="true"></span>
   </button>
 </div>
+
+<script th:fragment="tooltip" type="application/javascript">
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+  })
+</script>
 </html>
