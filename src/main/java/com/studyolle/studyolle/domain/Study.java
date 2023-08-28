@@ -129,7 +129,7 @@ public class Study {
     }
 
     public boolean isRemovable() {
-        return !this.published;
+        return !this.published; // TODO 모임을 했던 스터디는 삭제할 수 없다.
     }
 
     public String getEncodedPath() {
