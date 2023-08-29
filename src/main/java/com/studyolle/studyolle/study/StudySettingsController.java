@@ -39,6 +39,7 @@ public class StudySettingsController {
     private final ObjectMapper objectMapper;
     private final TagService tagService;
     private final ZoneRepository zoneRepository;
+    private final StudyRepository studyRepository;
 
     @GetMapping("/description")
     public String viewStudySetting(@CurrentUser Account account, @PathVariable String path, Model model){

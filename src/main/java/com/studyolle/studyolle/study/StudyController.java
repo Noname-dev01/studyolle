@@ -71,4 +71,19 @@ public class StudyController {
 
         return "study/members";
     }
+
+    //join,leave는 원래 @PostMapping으로 해야됨 html form으로 감싸면 UI가 안맞아서 이렇게 해놓음
+    @GetMapping("/study/{path}/join")
+    public String joinStudy(@CurrentUser Account account, @PathVariable String path){
+        Study study = studyRepository.findStudyWithMembersByPath(path);
+        studyService.addMember(study, account);
+        return "redirect:/study/" + study.getEncodedPath() + "/members";
+    }
+
+    @GetMapping("/study/{path}/leave")
+    public String leaveStudy(@CurrentUser Account account, @PathVariable String path){
+        Study study = studyRepository.findStudyWithMembersByPath(path);
+        studyService.removeMember(study, account);
+        return "redirect:/study/"+ study.getEncodedPath() + "/members";
+    }
 }
