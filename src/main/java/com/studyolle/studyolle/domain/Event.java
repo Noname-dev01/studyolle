@@ -1,8 +1,8 @@
 package com.studyolle.studyolle.domain;
 
+import com.studyolle.studyolle.account.UserAccount;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -40,7 +40,7 @@ public class Event {
     @Column(nullable = false)
     private LocalDateTime endDateTime;
 
-    private Integer limitOfEnrollment;
+    private Integer limitOfEnrollments;
 
     @OneToMany(mappedBy = "event")
     private List<Enrollment> enrollments;
@@ -48,4 +48,35 @@ public class Event {
     @Enumerated(EnumType.STRING)
     private EventType eventType;
 
+    public boolean isEnrollableFor(UserAccount userAccount) {
+        return isNotClosed() && !isAlreadyEnrolled(userAccount);
+    }
+
+    public boolean isDisenrollableFor(UserAccount userAccount){
+        return isNotClosed() && isAlreadyEnrolled(userAccount);
+    }
+
+    private boolean isNotClosed(){
+        return this.endEnrollmentDateTime.isAfter(LocalDateTime.now());
+    }
+
+    public boolean isAttended(UserAccount userAccount){
+        Account account = userAccount.getAccount();
+        for (Enrollment e : this.enrollments) {
+            if (e.getAccount().equals(account) && e.isAttended()){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isAlreadyEnrolled(UserAccount userAccount) {
+        Account account = userAccount.getAccount();
+        for (Enrollment e : this.enrollments) {
+            if (e.getAccount().equals(account)){
+                return true;
+            }
+        }
+        return false;
+    }
 }
