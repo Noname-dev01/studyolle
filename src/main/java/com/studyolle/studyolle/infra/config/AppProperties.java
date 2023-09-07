@@ -1,4 +1,4 @@
-package com.studyolle.studyolle.config;
+package com.studyolle.studyolle.infra.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

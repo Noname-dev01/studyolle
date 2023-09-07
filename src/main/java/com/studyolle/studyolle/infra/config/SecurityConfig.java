@@ -1,4 +1,4 @@
-package com.studyolle.studyolle.config;
+package com.studyolle.studyolle.infra.config;
 
 import com.studyolle.studyolle.account.AccountService;
 import lombok.RequiredArgsConstructor;

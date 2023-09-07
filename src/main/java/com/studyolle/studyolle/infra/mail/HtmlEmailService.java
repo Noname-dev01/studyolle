@@ -1,4 +1,4 @@
-package com.studyolle.studyolle.mail;
+package com.studyolle.studyolle.infra.mail;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

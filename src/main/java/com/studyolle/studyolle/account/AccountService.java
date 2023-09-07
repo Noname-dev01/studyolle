@@ -1,11 +1,11 @@
 package com.studyolle.studyolle.account;
 
-import com.studyolle.studyolle.config.AppProperties;
+import com.studyolle.studyolle.infra.config.AppProperties;
 import com.studyolle.studyolle.domain.Account;
 import com.studyolle.studyolle.domain.Tag;
 import com.studyolle.studyolle.domain.Zone;
-import com.studyolle.studyolle.mail.EmailMessage;
-import com.studyolle.studyolle.mail.EmailService;
+import com.studyolle.studyolle.infra.mail.EmailMessage;
+import com.studyolle.studyolle.infra.mail.EmailService;
 import com.studyolle.studyolle.settings.form.Notifications;
 import com.studyolle.studyolle.settings.form.Profile;
 import lombok.RequiredArgsConstructor;
