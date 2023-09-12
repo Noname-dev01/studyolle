@@ -148,7 +148,7 @@ public class StudyService {
     }
 
     public void addMember(Study study, Account account) {
-        study.addMember(account);
+        study.addMemberCount(account);
     }
 
     public void removeMember(Study study, Account account){

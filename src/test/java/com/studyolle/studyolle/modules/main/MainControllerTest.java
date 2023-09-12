@@ -1,5 +1,7 @@
 package com.studyolle.studyolle.modules.main;
 
+import com.studyolle.studyolle.infra.AbstractContainerBaseTest;
+import com.studyolle.studyolle.infra.MockMvcTest;
 import com.studyolle.studyolle.modules.account.AccountRepository;
 import com.studyolle.studyolle.modules.account.AccountService;
 import com.studyolle.studyolle.modules.account.form.SignUpForm;
@@ -8,8 +10,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -20,19 +20,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-class MainControllerTest {
+@MockMvcTest
+class MainControllerTest extends AbstractContainerBaseTest {
 
-    @Autowired
-    MockMvc mockMvc;
-    @Autowired
-    AccountService accountService;
-    @Autowired
-    AccountRepository accountRepository;
+    @Autowired MockMvc mockMvc;
+    @Autowired AccountService accountService;
+    @Autowired AccountRepository accountRepository;
 
     @BeforeEach
-    void beforeEach(){
+    void beforeEach() {
         SignUpForm signUpForm = new SignUpForm();
         signUpForm.setNickname("admin");
         signUpForm.setEmail("admin@email.com");
@@ -41,57 +37,55 @@ class MainControllerTest {
     }
 
     @AfterEach
-    void afterEach(){
+    void afterEach() {
         accountRepository.deleteAll();
     }
 
-    @Test
     @DisplayName("이메일로 로그인 성공")
-    void login_with_email() throws Exception{
+    @Test
+    void login_with_email() throws Exception {
         mockMvc.perform(post("/login")
-                        .param("username","admin@email.com")
-                        .param("password","12345678")
-                        .with(csrf())
-                )
+                .param("username", "admin@email.com")
+                .param("password", "12345678")
+                .with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/"))
                 .andExpect(authenticated().withUsername("admin"));
     }
 
+    @DisplayName("이메일로 로그인 성공")
     @Test
-    @DisplayName("닉네임으로 로그인 성공")
-    void login_with_nickname() throws Exception{
+    void login_with_nickname() throws Exception {
         mockMvc.perform(post("/login")
-                        .param("username","admin")
-                        .param("password","12345678")
-                        .with(csrf())
-                )
+                .param("username", "admin")
+                .param("password", "12345678")
+                .with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/"))
                 .andExpect(authenticated().withUsername("admin"));
     }
 
-    @Test
     @DisplayName("로그인 실패")
-    void login_fail() throws Exception{
+    @Test
+    void login_fail() throws Exception {
         mockMvc.perform(post("/login")
-                        .param("username","1111111")
-                        .param("password","0000000")
-                        .with(csrf())
-                )
+                .param("username", "111111")
+                .param("password", "000000000")
+                .with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/login?error"))
                 .andExpect(unauthenticated());
     }
 
-    @Test
     @WithMockUser
     @DisplayName("로그아웃")
-    void logout() throws Exception{
+    @Test
+    void logout() throws Exception {
         mockMvc.perform(post("/logout")
-                        .with(csrf()))
+                .with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/"))
                 .andExpect(unauthenticated());
     }
+
 }

@@ -80,6 +80,10 @@ public class Study {
         return this.managers.contains(userAccount.getAccount());
     }
 
+    public void addMember(Account account){
+        this.members.add(account);
+    }
+
     public void publish() {
         if (!this.closed && !this.published) {
             this.published = true;
@@ -128,7 +132,7 @@ public class Study {
         return URLEncoder.encode(this.path, StandardCharsets.UTF_8);
     }
 
-    public void addMember(Account account) {
+    public void addMemberCount(Account account) {
         this.getMembers().add(account);
         this.memberCount++;
     }

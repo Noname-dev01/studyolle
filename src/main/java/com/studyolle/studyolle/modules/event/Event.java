@@ -6,6 +6,7 @@ import com.studyolle.studyolle.modules.study.Study;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -47,6 +48,7 @@ public class Event {
     @Column(nullable = false)
     private LocalDateTime endDateTime;
 
+    @Column
     private Integer limitOfEnrollments;
 
     @OneToMany(mappedBy = "event")
