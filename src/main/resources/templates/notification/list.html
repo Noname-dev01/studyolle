@@ -39,10 +39,12 @@
 
       <ul class="list-group mt-4" th:if="${numberOfChecked > 0}">
         <form th:action="@{/notifications}" th:method="delete">
-          <button type="submit" class="btn btn-block btn-outline-warning" aria-describedby="deleteHelp">
+          <div class="d-grid gap-2">
+          <button type="submit" class="btn btn-outline-warning" aria-describedby="deleteHelp">
             읽은 알림 삭제
           </button>
           <small id="deleteHelp">삭제하지 않아도 한달이 지난 알림은 사라집니다.</small>
+          </div>
         </form>
       </ul>
     </div>
