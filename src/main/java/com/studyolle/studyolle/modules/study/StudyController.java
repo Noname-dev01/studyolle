@@ -84,4 +84,5 @@ public class StudyController {
         studyService.removeMember(study, account);
         return "redirect:/study/"+ study.getEncodedPath() + "/members";
     }
+
 }
