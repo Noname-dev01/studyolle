@@ -5,6 +5,7 @@ import com.studyolle.studyolle.modules.account.UserAccount;
 import com.studyolle.studyolle.modules.tag.Tag;
 import com.studyolle.studyolle.modules.zone.Zone;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import java.net.URLEncoder;
@@ -60,6 +61,7 @@ public class Study {
 
     private boolean useBanner;
 
+    @ColumnDefault("0")
     private Integer memberCount;
 
     public void addManager(Account account) {
@@ -82,6 +84,10 @@ public class Study {
 
     public void addMember(Account account){
         this.members.add(account);
+    }
+
+    public String getImage(){
+        return image != null ? image : "/images/default_banner.png";
     }
 
     public void publish() {
